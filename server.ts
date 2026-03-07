@@ -2,101 +2,18 @@ import express from "express";
 import { createServer as createViteServer } from "vite";
 import path from "path";
 import { fileURLToPath } from "url";
-import Database from "better-sqlite3";
+import { createClient } from "@supabase/supabase-js";
+import dotenv from "dotenv";
+
+dotenv.config();
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const db = new Database("properties.db");
-
-// Initialize Database
-db.exec(`
-  CREATE TABLE IF NOT EXISTS properties (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    title TEXT NOT NULL,
-    description TEXT,
-    price TEXT NOT NULL,
-    location TEXT NOT NULL,
-    type TEXT NOT NULL, -- Apartment, Villa, Plot, Commercial
-    category TEXT NOT NULL, -- Residential, Commercial
-    bhk INTEGER,
-    size TEXT,
-    status TEXT DEFAULT 'Available',
-    images TEXT, -- JSON array of image URLs
-    amenities TEXT, -- JSON array
-    featured INTEGER DEFAULT 0
-  );
-
-  CREATE TABLE IF NOT EXISTS inquiries (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    property_id INTEGER,
-    name TEXT NOT NULL,
-    email TEXT NOT NULL,
-    phone TEXT NOT NULL,
-    message TEXT,
-    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY(property_id) REFERENCES properties(id)
-  );
-
-  CREATE TABLE IF NOT EXISTS testimonials (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    name TEXT NOT NULL,
-    role TEXT,
-    content TEXT NOT NULL,
-    rating INTEGER
-  );
-`);
-
-// Seed data if empty
-const propertyCount = db.prepare("SELECT COUNT(*) as count FROM properties").get() as { count: number };
-if (propertyCount.count === 0) {
-  const insert = db.prepare(`
-    INSERT INTO properties (title, description, price, location, type, category, bhk, size, images, amenities, featured)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-  `);
-
-  insert.run(
-    "Emerald Heights",
-    "Luxury 3BHK apartment with modern amenities and city view.",
-    "₹1.2 Cr",
-    "Gurgaon, Sector 45",
-    "Apartment",
-    "Residential",
-    3,
-    "1800 sqft",
-    JSON.stringify(["https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=800&q=80"]),
-    JSON.stringify(["Gym", "Pool", "Parking", "Security"]),
-    1
-  );
-
-  insert.run(
-    "The Grand Villa",
-    "Spacious 5BHK villa with private garden and pool.",
-    "₹4.5 Cr",
-    "South Delhi, Vasant Vihar",
-    "Villa",
-    "Residential",
-    5,
-    "4500 sqft",
-    JSON.stringify(["https://images.unsplash.com/photo-1613490493576-7fde63acd811?auto=format&fit=crop&w=800&q=80"]),
-    JSON.stringify(["Private Pool", "Garden", "Home Theater", "Solar Panels"]),
-    1
-  );
-
-  insert.run(
-    "Corporate Plaza",
-    "Grade A office space in the heart of the business district.",
-    "₹15 Cr",
-    "Mumbai, BKC",
-    "Commercial",
-    "Commercial",
-    0,
-    "10000 sqft",
-    JSON.stringify(["https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=800&q=80"]),
-    JSON.stringify(["High-speed Elevators", "Cafeteria", "Conference Rooms"]),
-    1
-  );
-}
+// Supabase Client
+const supabaseUrl = process.env.SUPABASE_URL || "";
+const supabaseKey = process.env.SUPABASE_ANON_KEY || "";
+const supabase = createClient(supabaseUrl, supabaseKey);
 
 async function startServer() {
   const app = express();
@@ -105,52 +22,73 @@ async function startServer() {
   app.use(express.json());
 
   // API Routes
-  app.get("/api/properties", (req, res) => {
-    const { type, category, location, minPrice, maxPrice } = req.query;
-    let query = "SELECT * FROM properties WHERE 1=1";
-    const params: any[] = [];
+  app.get("/api/properties", async (req, res) => {
+    const { type, category, location } = req.query;
+    let query = supabase.from("properties").select("*");
 
-    if (type) {
-      query += " AND type = ?";
-      params.push(type);
-    }
-    if (category) {
-      query += " AND category = ?";
-      params.push(category);
-    }
-    if (location) {
-      query += " AND location LIKE ?";
-      params.push(`%${location}%`);
-    }
+    if (type) query = query.eq("type", type);
+    if (category) query = query.eq("category", category);
+    if (location) query = query.ilike("location", `%${location}%`);
 
-    const properties = db.prepare(query).all(...params);
-    res.json(properties.map((p: any) => ({
-      ...p,
-      images: JSON.parse(p.images),
-      amenities: JSON.parse(p.amenities)
-    })));
+    const { data, error } = await query;
+    if (error) return res.status(500).json({ error: error.message });
+    res.json(data);
   });
 
-  app.get("/api/properties/:id", (req, res) => {
-    const property = db.prepare("SELECT * FROM properties WHERE id = ?").get(req.params.id) as any;
-    if (!property) return res.status(404).json({ error: "Property not found" });
-    res.json({
-      ...property,
-      images: JSON.parse(property.images),
-      amenities: JSON.parse(property.amenities)
-    });
+  app.get("/api/properties/:id", async (req, res) => {
+    const { data, error } = await supabase
+      .from("properties")
+      .select("*")
+      .eq("id", req.params.id)
+      .single();
+    
+    if (error) return res.status(404).json({ error: "Property not found" });
+    res.json(data);
   });
 
-  app.post("/api/inquiries", (req, res) => {
-    const { property_id, name, email, phone, message } = req.body;
-    const insert = db.prepare("INSERT INTO inquiries (property_id, name, email, phone, message) VALUES (?, ?, ?, ?, ?)");
-    insert.run(property_id, name, email, phone, message);
+  app.post("/api/properties", async (req, res) => {
+    const { password, ...propertyData } = req.body;
+    if (password !== process.env.ADMIN_PASSWORD) {
+      return res.status(401).json({ error: "Unauthorized" });
+    }
+
+    const { data, error } = await supabase
+      .from("properties")
+      .insert([propertyData])
+      .select();
+
+    if (error) return res.status(500).json({ error: error.message });
+    res.status(201).json(data[0]);
+  });
+
+  app.delete("/api/properties/:id", async (req, res) => {
+    const { password } = req.body;
+    if (password !== process.env.ADMIN_PASSWORD) {
+      return res.status(401).json({ error: "Unauthorized" });
+    }
+
+    const { error } = await supabase
+      .from("properties")
+      .delete()
+      .eq("id", req.params.id);
+
+    if (error) return res.status(500).json({ error: error.message });
+    res.json({ success: true });
+  });
+
+  app.post("/api/inquiries", async (req, res) => {
+    const { data, error } = await supabase
+      .from("inquiries")
+      .insert([req.body]);
+
+    if (error) return res.status(500).json({ error: error.message });
     res.status(201).json({ success: true });
   });
 
-  app.get("/api/testimonials", (req, res) => {
-    const testimonials = db.prepare("SELECT * FROM testimonials").all();
-    res.json(testimonials);
+  app.get("/api/testimonials", async (req, res) => {
+    const { data, error } = await supabase.from("testimonials").select("*");
+    if (error) return res.status(500).json({ error: error.message });
+    res.json(data);
   });
 
   // Vite middleware for development

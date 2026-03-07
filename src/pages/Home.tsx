@@ -108,7 +108,7 @@ export default function HomePage() {
                 className="group p-8 rounded-3xl bg-navy/5 hover:bg-emerald transition-all duration-300 text-center"
               >
                 <div className="w-16 h-16 bg-white rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-sm group-hover:scale-110 transition-transform">
-                  <cat.icon className="text-emerald group-hover:text-navy transition-colors" size={32} />
+                  <cat.icon className="text-emerald" size={32} />
                 </div>
                 <h3 className="text-xl font-bold text-navy group-hover:text-white mb-2">{cat.name}</h3>
                 <p className="text-navy/40 group-hover:text-white/80 font-medium">{cat.count} Properties</p>
