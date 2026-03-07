@@ -10,10 +10,12 @@ dotenv.config();
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+import { DUMMY_PROPERTIES } from "./src/data/mockData";
+
 // Supabase Client
 const supabaseUrl = process.env.SUPABASE_URL || "";
 const supabaseKey = process.env.SUPABASE_ANON_KEY || "";
-const supabase = createClient(supabaseUrl, supabaseKey);
+const supabase = supabaseUrl && supabaseKey ? createClient(supabaseUrl, supabaseKey) : null;
 
 async function startServer() {
   const app = express();
@@ -24,18 +26,36 @@ async function startServer() {
   // API Routes
   app.get("/api/properties", async (req, res) => {
     const { type, category, location } = req.query;
-    let query = supabase.from("properties").select("*");
 
+    if (!supabase) {
+      // Fallback to dummy data if Supabase is not configured
+      let filtered = [...DUMMY_PROPERTIES];
+      if (type) filtered = filtered.filter(p => p.type === type);
+      if (category) filtered = filtered.filter(p => p.category === category);
+      if (location) filtered = filtered.filter(p => p.location.toLowerCase().includes((location as string).toLowerCase()));
+      return res.json(filtered);
+    }
+
+    let query = supabase.from("properties").select("*");
     if (type) query = query.eq("type", type);
     if (category) query = query.eq("category", category);
     if (location) query = query.ilike("location", `%${location}%`);
 
     const { data, error } = await query;
     if (error) return res.status(500).json({ error: error.message });
-    res.json(data);
+    
+    // Merge with dummy data for preview if database is empty
+    const result = data && data.length > 0 ? data : DUMMY_PROPERTIES;
+    res.json(result);
   });
 
   app.get("/api/properties/:id", async (req, res) => {
+    if (!supabase || Number(req.params.id) >= 100) {
+      const prop = DUMMY_PROPERTIES.find(p => p.id === Number(req.params.id));
+      if (prop) return res.json(prop);
+      if (!supabase) return res.status(404).json({ error: "Property not found" });
+    }
+
     const { data, error } = await supabase
       .from("properties")
       .select("*")
