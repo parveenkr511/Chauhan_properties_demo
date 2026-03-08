@@ -22,7 +22,12 @@ export default function ListingsPage() {
     setLoading(true);
     propertyService.getProperties(filters)
       .then(data => {
-        setProperties(data);
+        setProperties(Array.isArray(data) ? data : []);
+        setLoading(false);
+      })
+      .catch(err => {
+        console.error('[ListingsPage] Error loading properties:', err);
+        setProperties([]);
         setLoading(false);
       });
   }, [filters]);

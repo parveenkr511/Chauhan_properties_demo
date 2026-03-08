@@ -13,7 +13,18 @@ export default function HomePage() {
 
   useEffect(() => {
     propertyService.getProperties()
-      .then(data => setFeaturedProperties(data.filter((p: Property) => p.featured === 1)));
+      .then(data => {
+        if (Array.isArray(data)) {
+          setFeaturedProperties(data.filter((p: Property) => p.featured === 1));
+        } else {
+          console.error('[HomePage] Received non-array data for properties:', data);
+          setFeaturedProperties([]);
+        }
+      })
+      .catch(err => {
+        console.error('[HomePage] Error loading properties:', err);
+        setFeaturedProperties([]);
+      });
   }, []);
 
   const categories = [
@@ -64,21 +75,21 @@ export default function HomePage() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
             onSubmit={handleSearch}
-            className="max-w-4xl mx-auto bg-white p-2 rounded-2xl shadow-2xl flex flex-col md:flex-row gap-2"
+            className="max-w-4xl mx-auto bg-black p-2 rounded-2xl shadow-2xl flex flex-col md:flex-row gap-2"
           >
-            <div className="flex-1 flex items-center px-4 py-3 border-b md:border-b-0 md:border-r border-navy/10">
+            <div className="flex-1 flex items-center px-4 py-3 border-b md:border-b-0 md:border-r border-white/10">
               <Search className="text-emerald mr-3" size={24} />
               <input
                 type="text"
                 placeholder="Enter location, city or project..."
-                className="w-full outline-none text-navy font-medium"
+                className="w-full outline-none text-white placeholder:text-white/40 font-medium bg-transparent"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
               />
             </div>
             <div className="flex-1 flex items-center px-4 py-3">
               <Home className="text-emerald mr-3" size={24} />
-              <select className="w-full outline-none text-navy font-medium bg-transparent">
+              <select className="w-full outline-none text-white font-medium bg-transparent [&>option]:text-black">
                 <option>Property Type</option>
                 <option>Apartment</option>
                 <option>Villa</option>
@@ -93,11 +104,15 @@ export default function HomePage() {
       </section>
 
       {/* Categories */}
-      <section className="py-24 bg-white">
-        <div className="max-w-7xl mx-auto px-4">
+      <section className="py-24 bg-navy relative overflow-hidden">
+        {/* Decorative background blobs for blur effect visibility */}
+        <div className="absolute top-0 left-0 w-96 h-96 bg-emerald/20 rounded-full blur-[120px] -translate-x-1/2 -translate-y-1/2"></div>
+        <div className="absolute bottom-0 right-0 w-96 h-96 bg-emerald/10 rounded-full blur-[120px] translate-x-1/2 translate-y-1/2"></div>
+        
+        <div className="max-w-7xl mx-auto px-4 relative z-10">
           <div className="text-center mb-16">
-            <h2 className="section-title">Explore by Category</h2>
-            <p className="text-navy/60">Find the perfect property type that suits your lifestyle or business needs.</p>
+            <h2 className="text-3xl md:text-4xl font-display font-bold text-white mb-4">Explore by Category</h2>
+            <p className="text-white/60">Find the perfect property type that suits your lifestyle or business needs.</p>
           </div>
 
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-8">
@@ -105,13 +120,13 @@ export default function HomePage() {
               <Link
                 key={i}
                 to={`/properties?type=${cat.type}`}
-                className="group p-8 rounded-3xl bg-navy/5 hover:bg-emerald transition-all duration-300 text-center"
+                className="group p-8 rounded-3xl bg-white/5 backdrop-blur-xl border border-white/10 hover:bg-white/10 hover:border-emerald/50 transition-all duration-500 text-center"
               >
-                <div className="w-16 h-16 bg-white rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-sm group-hover:scale-110 transition-transform">
-                  <cat.icon className="text-emerald" size={32} />
+                <div className="w-16 h-16 bg-navy/80 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg group-hover:scale-110 group-hover:bg-emerald transition-all duration-500">
+                  <cat.icon className="text-emerald group-hover:text-white" size={32} />
                 </div>
-                <h3 className="text-xl font-bold text-navy group-hover:text-white mb-2">{cat.name}</h3>
-                <p className="text-navy/40 group-hover:text-white/80 font-medium">{cat.count} Properties</p>
+                <h3 className="text-xl font-bold text-white mb-2">{cat.name}</h3>
+                <p className="text-white/40 group-hover:text-white/80 font-medium">{cat.count} Properties</p>
               </Link>
             ))}
           </div>
