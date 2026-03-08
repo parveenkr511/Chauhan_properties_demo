@@ -24,7 +24,7 @@ async function startServer() {
   app.use(express.json());
 
   // API Routes
-  const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || "admin123";
+  const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || "Shivansh@511";
 
   app.post("/api/admin/verify", (req, res) => {
     const { password } = req.body;
