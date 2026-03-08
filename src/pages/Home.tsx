@@ -120,13 +120,13 @@ export default function HomePage() {
               <Link
                 key={i}
                 to={`/properties?type=${cat.type}`}
-                className="group p-8 rounded-3xl bg-white/5 backdrop-blur-xl border border-white/10 hover:bg-white/10 hover:border-emerald/50 transition-all duration-500 text-center"
+                className="group p-8 rounded-[32px] bg-white/10 backdrop-blur-md border border-white/20 hover:bg-white/20 hover:border-emerald/50 transition-all duration-500 text-center shadow-2xl flex flex-col items-center"
               >
-                <div className="w-16 h-16 bg-navy/80 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg group-hover:scale-110 group-hover:bg-emerald transition-all duration-500">
-                  <cat.icon className="text-emerald group-hover:text-white" size={32} />
+                <div className="w-20 h-20 bg-navy rounded-2xl flex items-center justify-center mb-6 shadow-inner group-hover:scale-110 group-hover:bg-emerald transition-all duration-500 border border-white/10">
+                  <cat.icon className="text-emerald group-hover:text-white" size={36} />
                 </div>
-                <h3 className="text-xl font-bold text-white mb-2">{cat.name}</h3>
-                <p className="text-white/40 group-hover:text-white/80 font-medium">{cat.count} Properties</p>
+                <h3 className="text-2xl font-bold text-white mb-2">{cat.name}</h3>
+                <p className="text-white/60 group-hover:text-white/90 font-medium">{cat.count} Properties</p>
               </Link>
             ))}
           </div>
