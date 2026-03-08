@@ -89,11 +89,12 @@ export default function HomePage() {
             </div>
             <div className="flex-1 flex items-center px-4 py-3">
               <Home className="text-emerald mr-3" size={24} />
-              <select className="w-full outline-none text-white font-medium bg-transparent [&>option]:text-black">
-                <option>Property Type</option>
-                <option>Apartment</option>
-                <option>Villa</option>
-                <option>Commercial</option>
+              <select className="w-full outline-none text-white font-medium bg-transparent cursor-pointer [&>option]:bg-[#111827] [&>option]:text-white">
+                <option value="">Property Type</option>
+                <option value="Apartment">Apartment</option>
+                <option value="Villa">Villa</option>
+                <option value="Commercial">Commercial</option>
+                <option value="Plot">Plot</option>
               </select>
             </div>
             <button type="submit" className="btn-primary py-4 px-10 rounded-xl">
