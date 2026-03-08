@@ -21,7 +21,7 @@ export default function AboutPage() {
             animate={{ opacity: 1, x: 0 }}
             className="text-5xl md:text-7xl font-display font-bold mb-8"
           >
-            Redefining <br /> <span className="text-emerald">Real Estate</span> in India
+            Redefining <br /> <span className="text-emerald">Real Estate</span> in Gurugram
           </motion.h1>
           <p className="text-xl text-white/60 max-w-2xl leading-relaxed">
             Chauhan Properties is a premier real estate consultancy firm dedicated to providing exceptional property solutions. With over 15 years of experience, we have helped thousands of clients find their perfect homes and high-yield investments.
@@ -48,7 +48,7 @@ export default function AboutPage() {
               </div>
               <h2 className="text-3xl font-display font-bold">Our Vision</h2>
               <p className="text-white/60 text-lg leading-relaxed">
-                To be India's most trusted real estate platform, known for our integrity, innovation, and commitment to delivering excellence in every transaction.
+                To be Gurugram's most trusted real estate platform, known for our integrity, innovation, and commitment to delivering excellence in every transaction.
               </p>
             </div>
           </div>

@@ -107,7 +107,7 @@ export const Footer = () => {
               <span className="text-2xl font-display font-bold tracking-tight">Chauhan Properties</span>
             </Link>
             <p className="text-white/60 leading-relaxed">
-              Premium real estate solutions for discerning clients. We specialize in luxury residential and high-yield commercial properties across India.
+              Premium real estate solutions for discerning clients. We specialize in luxury residential and high-yield commercial properties across Gurugram.
             </p>
             <div className="flex space-x-4">
               {[Facebook, Twitter, Instagram, Linkedin].map((Icon, i) => (

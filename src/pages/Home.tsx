@@ -59,7 +59,7 @@ export default function HomePage() {
             animate={{ opacity: 1, y: 0 }}
             className="text-5xl md:text-7xl font-display font-bold text-white mb-6 leading-tight"
           >
-            Find Your <span className="text-emerald">Dream Space</span> <br /> in India's Prime Locations
+            Find Your <span className="text-emerald">Dream Space</span> <br /> in Gurugram
           </motion.h1>
           <motion.p
             initial={{ opacity: 0, y: 20 }}
@@ -176,7 +176,7 @@ export default function HomePage() {
               <div className="space-y-8">
                 {[
                   { icon: ShieldCheck, title: 'Verified Properties', desc: 'Every listing on our platform undergoes a rigorous 50-point verification process.' },
-                  { icon: Clock, title: 'Zero Brokerage', desc: 'We connect you directly with developers and owners, saving you lakhs in commissions.' },
+                  { icon: Clock, title: 'Lowest Brokerage', desc: 'We offer the most competitive brokerage rates in Gurugram, ensuring you save more on every transaction.' },
                   { icon: Users, title: 'Expert Guidance', desc: 'Our team of real estate veterans provides personalized investment advice.' },
                 ].map((item, i) => (
                   <div key={i} className="flex gap-6">
@@ -200,23 +200,31 @@ export default function HomePage() {
         <div className="max-w-7xl mx-auto px-4">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-display font-bold mb-4">What Our Clients Say</h2>
-            <p className="text-white/60">Trusted by thousands of homeowners and investors across India.</p>
+            <p className="text-white/60">Trusted by thousands of homeowners and investors across Gurugram.</p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {[
-              { name: 'Rahul Sharma', role: 'Investor', content: 'Chauhan Properties helped me find a high-yield commercial property in Gurgaon. Their market analysis was spot on.', rating: 5 },
-              { name: 'Priya Verma', role: 'Homeowner', content: 'The process of buying our first villa was so smooth. No hidden charges and complete transparency.', rating: 5 },
-              { name: 'Amit Patel', role: 'Business Owner', content: 'Found the perfect office space for my startup. The team was extremely professional and helpful.', rating: 4 },
+              { name: 'Rahul Sharma', role: 'Investor', content: 'Chauhan Properties helped me find a high-yield commercial property in Gurugram. Their market analysis was spot on.', rating: 5, image: 'https://picsum.photos/seed/rahul/100/100' },
+              { name: 'Priya Verma', role: 'Homeowner', content: 'The process of buying our first villa was so smooth. No hidden charges and complete transparency.', rating: 5, image: 'https://picsum.photos/seed/priya/100/100' },
+              { name: 'Amit Patel', role: 'Business Owner', content: 'Found the perfect office space for my startup. The team was extremely professional and helpful.', rating: 4, image: 'https://picsum.photos/seed/amit/100/100' },
             ].map((t, i) => (
               <div key={i} className="bg-white/5 p-8 rounded-3xl border border-white/10">
                 <div className="flex gap-1 mb-6">
                   {[...Array(t.rating)].map((_, i) => <Star key={i} size={16} className="fill-emerald text-emerald" />)}
                 </div>
                 <p className="text-lg text-white/80 italic mb-8">"{t.content}"</p>
-                <div>
-                  <p className="font-bold text-white">{t.name}</p>
-                  <p className="text-white/40 text-sm">{t.role}</p>
+                <div className="flex items-center gap-4">
+                  <img 
+                    src={t.image} 
+                    alt={t.name} 
+                    className="w-12 h-12 rounded-full object-cover border-2 border-emerald/20"
+                    referrerPolicy="no-referrer"
+                  />
+                  <div>
+                    <p className="font-bold text-white">{t.name}</p>
+                    <p className="text-white/40 text-sm">{t.role}</p>
+                  </div>
                 </div>
               </div>
             ))}
