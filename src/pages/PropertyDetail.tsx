@@ -3,6 +3,7 @@ import { useParams, Link } from 'react-router-dom';
 import { motion } from 'motion/react';
 import { MapPin, Maximize, BedDouble, CheckCircle2, Phone, Send, MessageCircle, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Property, Inquiry } from '../types';
+import { propertyService } from '../services/propertyService';
 
 export default function PropertyDetailPage() {
   const { id } = useParams();
@@ -18,12 +19,13 @@ export default function PropertyDetailPage() {
   });
 
   useEffect(() => {
-    fetch(`/api/properties/${id}`)
-      .then(res => res.json())
-      .then(data => {
-        setProperty(data);
-        setLoading(false);
-      });
+    if (id) {
+      propertyService.getPropertyById(id)
+        .then(data => {
+          setProperty(data);
+          setLoading(false);
+        });
+    }
   }, [id]);
 
   const handleSubmit = async (e: React.FormEvent) => {

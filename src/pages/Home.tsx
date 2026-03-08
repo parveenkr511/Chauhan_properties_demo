@@ -4,6 +4,7 @@ import { Search, Home, Building2, Palmtree, Map, ArrowRight, Star, ShieldCheck, 
 import { Link, useNavigate } from 'react-router-dom';
 import { PropertyCard } from '../components/PropertyCard';
 import { Property } from '../types';
+import { propertyService } from '../services/propertyService';
 
 export default function HomePage() {
   const [featuredProperties, setFeaturedProperties] = useState<Property[]>([]);
@@ -11,8 +12,7 @@ export default function HomePage() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    fetch('/api/properties')
-      .then(res => res.json())
+    propertyService.getProperties()
       .then(data => setFeaturedProperties(data.filter((p: Property) => p.featured === 1)));
   }, []);
 

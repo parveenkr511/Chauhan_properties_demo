@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { motion } from 'motion/react';
 import { Plus, Trash2, LayoutDashboard, LogOut, Key, Image as ImageIcon, MapPin, Tag, Home, Maximize, BedDouble } from 'lucide-react';
 import { Property } from '../types';
+import { propertyService } from '../services/propertyService';
 
 export default function AdminDashboard() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -29,8 +30,7 @@ export default function AdminDashboard() {
   }, [isLoggedIn]);
 
   const fetchProperties = async () => {
-    const res = await fetch('/api/properties');
-    const data = await res.json();
+    const data = await propertyService.getProperties();
     setProperties(data);
   };
 

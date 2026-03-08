@@ -4,6 +4,7 @@ import { motion } from 'motion/react';
 import { Filter, Search, X } from 'lucide-react';
 import { PropertyCard } from '../components/PropertyCard';
 import { Property } from '../types';
+import { propertyService } from '../services/propertyService';
 
 export default function ListingsPage() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -19,9 +20,7 @@ export default function ListingsPage() {
 
   useEffect(() => {
     setLoading(true);
-    const query = new URLSearchParams(filters).toString();
-    fetch(`/api/properties?${query}`)
-      .then(res => res.json())
+    propertyService.getProperties(filters)
       .then(data => {
         setProperties(data);
         setLoading(false);
