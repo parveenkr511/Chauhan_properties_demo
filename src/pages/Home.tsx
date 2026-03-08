@@ -171,7 +171,7 @@ export default function HomePage() {
               </div>
             </div>
             <div>
-              <h2 className="section-title mb-8">Why LuxeEstate is Your Best Partner</h2>
+              <h2 className="section-title mb-8">Why Chauhan Properties is Your Best Partner</h2>
               <div className="space-y-8">
                 {[
                   { icon: ShieldCheck, title: 'Verified Properties', desc: 'Every listing on our platform undergoes a rigorous 50-point verification process.' },
@@ -204,7 +204,7 @@ export default function HomePage() {
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {[
-              { name: 'Rahul Sharma', role: 'Investor', content: 'LuxeEstate helped me find a high-yield commercial property in Gurgaon. Their market analysis was spot on.', rating: 5 },
+              { name: 'Rahul Sharma', role: 'Investor', content: 'Chauhan Properties helped me find a high-yield commercial property in Gurgaon. Their market analysis was spot on.', rating: 5 },
               { name: 'Priya Verma', role: 'Homeowner', content: 'The process of buying our first villa was so smooth. No hidden charges and complete transparency.', rating: 5 },
               { name: 'Amit Patel', role: 'Business Owner', content: 'Found the perfect office space for my startup. The team was extremely professional and helpful.', rating: 4 },
             ].map((t, i) => (

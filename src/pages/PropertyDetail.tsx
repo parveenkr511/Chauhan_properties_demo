@@ -48,7 +48,7 @@ export default function PropertyDetailPage() {
   if (loading) return <div className="pt-40 text-center">Loading property details...</div>;
   if (!property) return <div className="pt-40 text-center">Property not found.</div>;
 
-  const whatsappUrl = `https://wa.me/919876543210?text=I'm interested in ${property.title} (${property.location})`;
+  const whatsappUrl = `https://wa.me/919818389758?text=I'm interested in ${property.title} (${property.location})`;
 
   return (
     <div className="pt-20 min-h-screen bg-white">
@@ -233,7 +233,7 @@ export default function PropertyDetailPage() {
                     <MessageCircle size={20} /> Chat on WhatsApp
                   </a>
                   <a
-                    href="tel:+919876543210"
+                    href="tel:+919818389758"
                     className="w-full flex items-center justify-center gap-2 py-4 border-2 border-navy/10 text-navy rounded-xl font-bold hover:bg-navy hover:text-white transition-all"
                   >
                     <Phone size={20} /> Call Agent

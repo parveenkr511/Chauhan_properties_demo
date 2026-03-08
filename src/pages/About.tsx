@@ -24,7 +24,7 @@ export default function AboutPage() {
             Redefining <br /> <span className="text-emerald">Real Estate</span> in India
           </motion.h1>
           <p className="text-xl text-white/60 max-w-2xl leading-relaxed">
-            LuxeEstate India is a premier real estate consultancy firm dedicated to providing exceptional property solutions. With over 15 years of experience, we have helped thousands of clients find their perfect homes and high-yield investments.
+            Chauhan Properties is a premier real estate consultancy firm dedicated to providing exceptional property solutions. With over 15 years of experience, we have helped thousands of clients find their perfect homes and high-yield investments.
           </p>
         </div>
       </section>

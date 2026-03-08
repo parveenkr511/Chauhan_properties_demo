@@ -62,7 +62,7 @@ export default function ContactPage() {
                     </div>
                     <div>
                       <p className="text-sm font-bold text-navy/40 uppercase tracking-widest mb-1">Call Us</p>
-                      <p className="text-lg font-bold text-navy">+91 98765 43210</p>
+                      <p className="text-lg font-bold text-navy">+91 9818389758</p>
                     </div>
                   </div>
 
@@ -72,7 +72,7 @@ export default function ContactPage() {
                     </div>
                     <div>
                       <p className="text-sm font-bold text-navy/40 uppercase tracking-widest mb-1">Email Us</p>
-                      <p className="text-lg font-bold text-navy">info@luxeestate.in</p>
+                      <p className="text-lg font-bold text-navy">info@chauhanproperties.in</p>
                     </div>
                   </div>
 
@@ -82,7 +82,7 @@ export default function ContactPage() {
                     </div>
                     <div>
                       <p className="text-sm font-bold text-navy/40 uppercase tracking-widest mb-1">Visit Us</p>
-                      <p className="text-lg font-bold text-navy">123 Business Hub, BKC, Mumbai, Maharashtra 400051</p>
+                      <p className="text-lg font-bold text-navy">Shop No.1, Tulip Purple, Darbaripur Rd, Sector 69, Gurugram, Haryana 122103</p>
                     </div>
                   </div>
 
@@ -99,7 +99,7 @@ export default function ContactPage() {
 
                 <div className="pt-8 border-t border-navy/10">
                   <a
-                    href="https://wa.me/919876543210"
+                    href="https://wa.me/919818389758"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="flex items-center justify-center gap-3 w-full py-4 bg-[#25D366] text-white rounded-2xl font-bold hover:opacity-90 transition-all"
@@ -200,12 +200,12 @@ export default function ContactPage() {
           <div className="text-center">
             <MapPin size={48} className="text-emerald mx-auto mb-4" />
             <h3 className="text-2xl font-bold text-navy">Interactive Map Location</h3>
-            <p className="text-navy/60">BKC Business Hub, Mumbai</p>
+            <p className="text-navy/60">Tulip Purple, Sector 69, Gurugram</p>
           </div>
         </div>
         {/* In a real app, you would embed a Google Map here */}
         <iframe
-          src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3770.796324204581!2d72.8644558!3d19.0726887!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3be7c8e123f8d27d%3A0x7ef0cf7f329547d7!2sBandra%20Kurla%20Complex%2C%20Mumbai%2C%20Maharashtra!5e0!3m2!1sen!2sin!4v1646635200000!5m2!1sen!2sin"
+          src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3509.324835485984!2d77.0366863!3d28.3943361!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x390d229446973333%3A0x6966666666666666!2sTulip%20Purple!5e0!3m2!1sen!2sin!4v1646635200000!5m2!1sen!2sin"
           width="100%"
           height="100%"
           style={{ border: 0 }}

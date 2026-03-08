@@ -20,9 +20,9 @@ export const Navbar = () => {
         <div className="flex justify-between h-20 items-center">
           <Link to="/" className="flex items-center space-x-2">
             <div className="w-10 h-10 bg-emerald rounded-lg flex items-center justify-center">
-              <span className="text-2xl font-bold">L</span>
+              <span className="text-2xl font-bold">C</span>
             </div>
-            <span className="text-2xl font-display font-bold tracking-tight">LuxeEstate</span>
+            <span className="text-2xl font-display font-bold tracking-tight">Chauhan Properties</span>
           </Link>
 
           {/* Desktop Nav */}
@@ -95,9 +95,9 @@ export const Footer = () => {
           <div className="space-y-6">
             <Link to="/" className="flex items-center space-x-2">
               <div className="w-10 h-10 bg-emerald rounded-lg flex items-center justify-center">
-                <span className="text-2xl font-bold">L</span>
+                <span className="text-2xl font-bold">C</span>
               </div>
-              <span className="text-2xl font-display font-bold tracking-tight">LuxeEstate</span>
+              <span className="text-2xl font-display font-bold tracking-tight">Chauhan Properties</span>
             </Link>
             <p className="text-white/60 leading-relaxed">
               Premium real estate solutions for discerning clients. We specialize in luxury residential and high-yield commercial properties across India.
@@ -137,22 +137,22 @@ export const Footer = () => {
             <ul className="space-y-4 text-white/60">
               <li className="flex items-start space-x-3">
                 <MapPin size={20} className="text-emerald shrink-0" />
-                <span>123 Business Hub, BKC, Mumbai, Maharashtra 400051</span>
+                <span>Shop No.1, Tulip Purple, Darbaripur Rd, Sector 69, Gurugram, Haryana 122103</span>
               </li>
               <li className="flex items-center space-x-3">
                 <Phone size={20} className="text-emerald shrink-0" />
-                <span>+91 98765 43210</span>
+                <span>+91 9818389758</span>
               </li>
               <li className="flex items-center space-x-3">
                 <Mail size={20} className="text-emerald shrink-0" />
-                <span>info@luxeestate.in</span>
+                <span>info@chauhanproperties.in</span>
               </li>
             </ul>
           </div>
         </div>
         
         <div className="pt-8 border-t border-white/10 text-center text-white/40 text-sm">
-          <p>© {new Date().getFullYear()} LuxeEstate India. All rights reserved.</p>
+          <p>© {new Date().getFullYear()} Chauhan Properties. All rights reserved.</p>
         </div>
       </div>
     </footer>
