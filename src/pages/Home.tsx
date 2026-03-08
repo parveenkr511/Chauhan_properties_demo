@@ -75,7 +75,7 @@ export default function HomePage() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
             onSubmit={handleSearch}
-            className="max-w-4xl mx-auto bg-black p-2 rounded-2xl shadow-2xl flex flex-col md:flex-row gap-2"
+            className="max-w-4xl mx-auto bg-[#111827]/80 backdrop-blur-xl p-2 rounded-2xl shadow-2xl flex flex-col md:flex-row gap-2 border border-white/10"
           >
             <div className="flex-1 flex items-center px-4 py-3 border-b md:border-b-0 md:border-r border-white/10">
               <Search className="text-emerald mr-3" size={24} />
@@ -104,15 +104,15 @@ export default function HomePage() {
       </section>
 
       {/* Categories */}
-      <section className="py-24 bg-[#0a0a0a] relative overflow-hidden">
+      <section className="py-24 bg-gradient-to-b from-[#0a0e1a] to-[#05070a] relative overflow-hidden">
         {/* Decorative background blobs for depth */}
-        <div className="absolute top-0 left-0 w-96 h-96 bg-emerald/10 rounded-full blur-[160px] -translate-x-1/2 -translate-y-1/2"></div>
-        <div className="absolute bottom-0 right-0 w-96 h-96 bg-zinc-800/20 rounded-full blur-[160px] translate-x-1/2 translate-y-1/2"></div>
+        <div className="absolute top-0 left-0 w-[500px] h-[500px] bg-emerald/10 rounded-full blur-[120px] -translate-x-1/2 -translate-y-1/2"></div>
+        <div className="absolute bottom-0 right-0 w-[500px] h-[500px] bg-emerald/5 rounded-full blur-[120px] translate-x-1/2 translate-y-1/2"></div>
         
         <div className="max-w-7xl mx-auto px-4 relative z-10">
           <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-display font-bold text-white mb-4">Explore by Category</h2>
-            <p className="text-white/50">Find the perfect property type that suits your lifestyle or business needs.</p>
+            <h2 className="text-3xl md:text-5xl font-display font-bold text-white mb-4">Explore by Category</h2>
+            <p className="text-white/50 text-lg">Find the perfect property type that suits your lifestyle or business needs.</p>
           </div>
 
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-8">
@@ -120,9 +120,9 @@ export default function HomePage() {
               <Link
                 key={i}
                 to={`/properties?type=${cat.type}`}
-                className="group p-8 rounded-[32px] bg-zinc-900/80 backdrop-blur-xl border border-white/5 hover:bg-zinc-800 hover:border-emerald/40 transition-all duration-500 text-center shadow-[0_20px_50px_rgba(0,0,0,0.5)] flex flex-col items-center"
+                className="group p-8 rounded-[32px] bg-white/5 backdrop-blur-2xl border border-white/10 hover:bg-emerald/10 hover:border-emerald/50 transition-all duration-500 text-center shadow-2xl flex flex-col items-center"
               >
-                <div className="w-20 h-20 bg-zinc-800 rounded-2xl flex items-center justify-center mb-6 shadow-inner group-hover:scale-110 group-hover:bg-emerald transition-all duration-500 border border-white/5">
+                <div className="w-20 h-20 bg-[#111827] rounded-2xl flex items-center justify-center mb-6 shadow-xl group-hover:scale-110 group-hover:bg-emerald transition-all duration-500 border border-white/10">
                   <cat.icon className="text-emerald group-hover:text-white" size={36} />
                 </div>
                 <h3 className="text-2xl font-bold text-white mb-2">{cat.name}</h3>
