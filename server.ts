@@ -24,11 +24,12 @@ async function startServer() {
   app.use(express.json());
 
   // API Routes
-  const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || "Shivansh@511";
+  // Forcing the password to the one requested by the user to ensure access
+  const ADMIN_PASSWORD = "Shivansh@511";
 
   app.post("/api/admin/verify", (req, res) => {
     const { password } = req.body;
-    if (password === ADMIN_PASSWORD) {
+    if (password && password.trim() === ADMIN_PASSWORD) {
       res.json({ success: true });
     } else {
       res.status(401).json({ error: "Invalid password" });
@@ -79,7 +80,7 @@ async function startServer() {
 
   app.post("/api/properties", async (req, res) => {
     const { password, ...propertyData } = req.body;
-    if (password !== ADMIN_PASSWORD) {
+    if (!password || password.trim() !== ADMIN_PASSWORD) {
       return res.status(401).json({ error: "Unauthorized" });
     }
 
@@ -94,7 +95,7 @@ async function startServer() {
 
   app.delete("/api/properties/:id", async (req, res) => {
     const { password } = req.body;
-    if (password !== ADMIN_PASSWORD) {
+    if (!password || password.trim() !== ADMIN_PASSWORD) {
       return res.status(401).json({ error: "Unauthorized" });
     }
 
