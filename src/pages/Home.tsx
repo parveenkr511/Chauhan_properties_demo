@@ -104,15 +104,15 @@ export default function HomePage() {
       </section>
 
       {/* Categories */}
-      <section className="py-24 bg-navy relative overflow-hidden">
-        {/* Decorative background blobs for blur effect visibility */}
-        <div className="absolute top-0 left-0 w-96 h-96 bg-emerald/20 rounded-full blur-[160px] -translate-x-1/2 -translate-y-1/2"></div>
-        <div className="absolute bottom-0 right-0 w-96 h-96 bg-emerald/10 rounded-full blur-[160px] translate-x-1/2 translate-y-1/2"></div>
+      <section className="py-24 bg-[#0a0a0a] relative overflow-hidden">
+        {/* Decorative background blobs for depth */}
+        <div className="absolute top-0 left-0 w-96 h-96 bg-emerald/10 rounded-full blur-[160px] -translate-x-1/2 -translate-y-1/2"></div>
+        <div className="absolute bottom-0 right-0 w-96 h-96 bg-zinc-800/20 rounded-full blur-[160px] translate-x-1/2 translate-y-1/2"></div>
         
         <div className="max-w-7xl mx-auto px-4 relative z-10">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-display font-bold text-white mb-4">Explore by Category</h2>
-            <p className="text-white/60">Find the perfect property type that suits your lifestyle or business needs.</p>
+            <p className="text-white/50">Find the perfect property type that suits your lifestyle or business needs.</p>
           </div>
 
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-8">
@@ -120,13 +120,13 @@ export default function HomePage() {
               <Link
                 key={i}
                 to={`/properties?type=${cat.type}`}
-                className="group p-8 rounded-[32px] bg-white/10 backdrop-blur-3xl border border-white/20 hover:bg-white/20 hover:border-emerald/50 transition-all duration-500 text-center shadow-2xl flex flex-col items-center"
+                className="group p-8 rounded-[32px] bg-zinc-900/80 backdrop-blur-xl border border-white/5 hover:bg-zinc-800 hover:border-emerald/40 transition-all duration-500 text-center shadow-[0_20px_50px_rgba(0,0,0,0.5)] flex flex-col items-center"
               >
-                <div className="w-20 h-20 bg-navy rounded-2xl flex items-center justify-center mb-6 shadow-inner group-hover:scale-110 group-hover:bg-emerald transition-all duration-500 border border-white/10">
+                <div className="w-20 h-20 bg-zinc-800 rounded-2xl flex items-center justify-center mb-6 shadow-inner group-hover:scale-110 group-hover:bg-emerald transition-all duration-500 border border-white/5">
                   <cat.icon className="text-emerald group-hover:text-white" size={36} />
                 </div>
                 <h3 className="text-2xl font-bold text-white mb-2">{cat.name}</h3>
-                <p className="text-white/60 group-hover:text-white/90 font-medium">{cat.count} Properties</p>
+                <p className="text-white/40 group-hover:text-white/70 font-medium">{cat.count} Properties</p>
               </Link>
             ))}
           </div>
