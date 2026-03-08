@@ -7,6 +7,8 @@ import { propertyService } from '../services/propertyService';
 export default function AdminDashboard() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [password, setPassword] = useState('');
+  const [loginError, setLoginError] = useState('');
+  const [isLoggingIn, setIsLoggingIn] = useState(false);
   const [properties, setProperties] = useState<Property[]>([]);
   const [inquiries, setInquiries] = useState<any[]>([]);
   const [activeTab, setActiveTab] = useState<'properties' | 'messages'>('properties');
@@ -51,12 +53,29 @@ export default function AdminDashboard() {
     }
   };
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    // In a real app, this would be a server-side check. 
-    // For this demo, we'll use a simple state check.
-    // The server will still validate the password on every POST/DELETE.
-    setIsLoggedIn(true);
+    setLoginError('');
+    setIsLoggingIn(true);
+
+    try {
+      const res = await fetch('/api/admin/verify', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ password })
+      });
+
+      if (res.ok) {
+        setIsLoggedIn(true);
+      } else {
+        setLoginError('Invalid admin password. Please try again.');
+        setPassword('');
+      }
+    } catch (err) {
+      setLoginError('Connection error. Please try again.');
+    } finally {
+      setIsLoggingIn(false);
+    }
   };
 
   const handleAddProperty = async (e: React.FormEvent) => {
@@ -126,14 +145,26 @@ export default function AdminDashboard() {
               <input
                 type="password"
                 required
-                className="w-full px-6 py-4 bg-navy/5 rounded-2xl outline-none focus:ring-2 ring-emerald/20"
+                className={`w-full px-6 py-4 bg-navy/5 rounded-2xl outline-none focus:ring-2 transition-all ${
+                  loginError ? 'ring-red-500/20 border border-red-500/50' : 'ring-emerald/20'
+                }`}
                 placeholder="Enter password..."
                 value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                onChange={(e) => {
+                  setPassword(e.target.value);
+                  if (loginError) setLoginError('');
+                }}
               />
+              {loginError && (
+                <p className="text-red-500 text-xs font-bold mt-2 ml-1">{loginError}</p>
+              )}
             </div>
-            <button type="submit" className="w-full btn-primary py-5 text-lg">
-              Unlock Dashboard
+            <button 
+              type="submit" 
+              disabled={isLoggingIn}
+              className="w-full btn-primary py-5 text-lg flex items-center justify-center gap-2"
+            >
+              {isLoggingIn ? 'Verifying...' : 'Unlock Dashboard'}
             </button>
           </form>
         </motion.div>

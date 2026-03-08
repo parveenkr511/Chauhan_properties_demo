@@ -24,6 +24,15 @@ async function startServer() {
   app.use(express.json());
 
   // API Routes
+  app.post("/api/admin/verify", (req, res) => {
+    const { password } = req.body;
+    if (password === process.env.ADMIN_PASSWORD) {
+      res.json({ success: true });
+    } else {
+      res.status(401).json({ error: "Invalid password" });
+    }
+  });
+
   app.get("/api/properties", async (req, res) => {
     const { type, category, location } = req.query;
 
