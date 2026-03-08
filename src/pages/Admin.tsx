@@ -106,7 +106,7 @@ export default function AdminDashboard() {
       fetchProperties();
     } else {
       const err = await res.json();
-      alert(`Error: ${err.error}`);
+      alert(`Error: ${err.error}${err.message ? ` - ${err.message}` : ''}`);
     }
     setLoading(false);
   };

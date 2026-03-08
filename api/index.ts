@@ -7,7 +7,15 @@ app.use(cors());
 app.use(express.json());
 
 app.get("/api/health", (req, res) => {
-  res.json({ status: "ok", message: "Backend is running on Vercel" });
+  res.json({ 
+    status: "ok", 
+    message: "Backend is running on Vercel",
+    supabase_connected: !!supabase,
+    env_vars: {
+      has_url: !!process.env.SUPABASE_URL,
+      has_key: !!process.env.SUPABASE_ANON_KEY
+    }
+  });
 });
 
 // Supabase Client
@@ -173,7 +181,12 @@ app.post("/api/properties", async (req, res) => {
     return res.status(401).json({ error: "Unauthorized" });
   }
 
-  if (!supabase) return res.status(500).json({ error: "Database not connected" });
+  if (!supabase) {
+    return res.status(500).json({ 
+      error: "Database not connected", 
+      message: "Please ensure SUPABASE_URL and SUPABASE_ANON_KEY are set in your Vercel Project Settings." 
+    });
+  }
 
   const { data, error } = await supabase
     .from("properties")
@@ -190,7 +203,12 @@ app.delete("/api/properties/:id", async (req, res) => {
     return res.status(401).json({ error: "Unauthorized" });
   }
 
-  if (!supabase) return res.status(500).json({ error: "Database not connected" });
+  if (!supabase) {
+    return res.status(500).json({ 
+      error: "Database not connected", 
+      message: "Please ensure SUPABASE_URL and SUPABASE_ANON_KEY are set in your Vercel Project Settings." 
+    });
+  }
 
   const { error } = await supabase
     .from("properties")
