@@ -10,13 +10,6 @@ export default function PropertyDetailPage() {
   const [property, setProperty] = useState<Property | null>(null);
   const [loading, setLoading] = useState(true);
   const [currentImage, setCurrentImage] = useState(0);
-  const [formStatus, setFormStatus] = useState<'idle' | 'submitting' | 'success'>('idle');
-  const [formData, setFormData] = useState<Inquiry>({
-    name: '',
-    email: '',
-    phone: '',
-    message: '',
-  });
 
   useEffect(() => {
     if (id) {
@@ -27,23 +20,6 @@ export default function PropertyDetailPage() {
         });
     }
   }, [id]);
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setFormStatus('submitting');
-    try {
-      await fetch('/api/inquiries', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ...formData, property_id: Number(id) }),
-      });
-      setFormStatus('success');
-      setFormData({ name: '', email: '', phone: '', message: '' });
-      setTimeout(() => setFormStatus('idle'), 5000);
-    } catch (err) {
-      setFormStatus('idle');
-    }
-  };
 
   if (loading) return <div className="pt-40 text-center">Loading property details...</div>;
   if (!property) return <div className="pt-40 text-center">Property not found.</div>;
@@ -163,72 +139,20 @@ export default function PropertyDetailPage() {
               </div>
             </div>
 
-            {/* Sidebar Form */}
+            {/* Sidebar Actions */}
             <aside className="space-y-8">
               <div className="bg-white p-8 rounded-3xl shadow-2xl border border-navy/5 sticky top-24">
-                <h3 className="text-2xl font-bold text-navy mb-8">Enquire Now</h3>
-                <form onSubmit={handleSubmit} className="space-y-5">
-                  <div>
-                    <input
-                      type="text"
-                      placeholder="Full Name"
-                      required
-                      className="w-full px-5 py-4 bg-navy/5 rounded-xl outline-none focus:ring-2 ring-emerald/20"
-                      value={formData.name}
-                      onChange={e => setFormData({ ...formData, name: e.target.value })}
-                    />
-                  </div>
-                  <div>
-                    <input
-                      type="email"
-                      placeholder="Email Address"
-                      required
-                      className="w-full px-5 py-4 bg-navy/5 rounded-xl outline-none focus:ring-2 ring-emerald/20"
-                      value={formData.email}
-                      onChange={e => setFormData({ ...formData, email: e.target.value })}
-                    />
-                  </div>
-                  <div>
-                    <input
-                      type="tel"
-                      placeholder="Phone Number"
-                      required
-                      className="w-full px-5 py-4 bg-navy/5 rounded-xl outline-none focus:ring-2 ring-emerald/20"
-                      value={formData.phone}
-                      onChange={e => setFormData({ ...formData, phone: e.target.value })}
-                    />
-                  </div>
-                  <div>
-                    <textarea
-                      placeholder="Your Message"
-                      rows={4}
-                      className="w-full px-5 py-4 bg-navy/5 rounded-xl outline-none focus:ring-2 ring-emerald/20 resize-none"
-                      value={formData.message}
-                      onChange={e => setFormData({ ...formData, message: e.target.value })}
-                    ></textarea>
-                  </div>
-                  <button
-                    type="submit"
-                    disabled={formStatus === 'submitting'}
-                    className="w-full btn-primary py-4 flex items-center justify-center gap-2"
-                  >
-                    {formStatus === 'submitting' ? 'Sending...' : (
-                      <>
-                        <Send size={18} /> Send Inquiry
-                      </>
-                    )}
-                  </button>
-                  {formStatus === 'success' && (
-                    <p className="text-emerald text-center font-bold text-sm">Thank you! We'll contact you soon.</p>
-                  )}
-                </form>
-
-                <div className="mt-8 pt-8 border-t border-navy/5 space-y-4">
+                <h3 className="text-2xl font-display font-bold text-navy mb-6">Interested?</h3>
+                <p className="text-navy/60 mb-8 leading-relaxed">
+                  Get in touch with our property experts to schedule a visit or get more details about this property.
+                </p>
+                
+                <div className="space-y-4">
                   <a
                     href={whatsappUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="w-full flex items-center justify-center gap-2 py-4 bg-[#25D366] text-white rounded-xl font-bold hover:opacity-90 transition-all"
+                    className="w-full flex items-center justify-center gap-2 py-4 bg-[#25D366] text-white rounded-xl font-bold hover:opacity-90 transition-all shadow-lg shadow-green-500/20"
                   >
                     <MessageCircle size={20} /> Chat on WhatsApp
                   </a>
@@ -238,6 +162,18 @@ export default function PropertyDetailPage() {
                   >
                     <Phone size={20} /> Call Agent
                   </a>
+                </div>
+
+                <div className="mt-8 pt-8 border-t border-navy/5">
+                  <div className="flex items-center gap-4">
+                    <div className="w-12 h-12 bg-emerald rounded-full flex items-center justify-center text-white font-bold text-xl">
+                      C
+                    </div>
+                    <div>
+                      <p className="font-bold text-navy">Chauhan Properties</p>
+                      <p className="text-sm text-navy/40">Verified Agency</p>
+                    </div>
+                  </div>
                 </div>
               </div>
             </aside>

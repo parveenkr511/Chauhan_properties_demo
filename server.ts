@@ -105,6 +105,37 @@ async function startServer() {
     res.status(201).json({ success: true });
   });
 
+  app.get("/api/inquiries", async (req, res) => {
+    if (!supabase) {
+      return res.json([
+        {
+          name: "John Doe",
+          email: "john@example.com",
+          phone: "9876543210",
+          message: "I am interested in the 3BHK Apartment in Sector 42. Please call me.",
+          created_at: new Date().toISOString(),
+          subject: "Property Inquiry"
+        },
+        {
+          name: "Priya Sharma",
+          email: "priya@gmail.com",
+          phone: "9988776655",
+          message: "Is the Luxury Villa in Sector 65 still available for site visit?",
+          created_at: new Date(Date.now() - 86400000).toISOString(),
+          subject: "Site Visit Request"
+        }
+      ]);
+    }
+    
+    const { data, error } = await supabase
+      .from("inquiries")
+      .select("*")
+      .order("created_at", { ascending: false });
+
+    if (error) return res.status(500).json({ error: error.message });
+    res.json(data);
+  });
+
   app.get("/api/testimonials", async (req, res) => {
     const { data, error } = await supabase.from("testimonials").select("*");
     if (error) return res.status(500).json({ error: error.message });

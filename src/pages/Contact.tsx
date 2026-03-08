@@ -166,17 +166,27 @@ export default function ContactPage() {
                     ></textarea>
                   </div>
                   <div className="md:col-span-2">
-                    <button
-                      type="submit"
-                      disabled={formStatus === 'submitting'}
-                      className="w-full md:w-auto btn-primary py-5 px-12 text-lg flex items-center justify-center gap-3"
-                    >
-                      {formStatus === 'submitting' ? 'Sending...' : (
-                        <>
-                          <Send size={20} /> Send Message
-                        </>
-                      )}
-                    </button>
+                    <div className="flex flex-col md:flex-row gap-4 mb-4">
+                      <button
+                        type="submit"
+                        disabled={formStatus === 'submitting'}
+                        className="flex-1 btn-primary py-5 px-12 text-lg flex items-center justify-center gap-3"
+                      >
+                        {formStatus === 'submitting' ? 'Sending...' : (
+                          <>
+                            <Send size={20} /> Send Message
+                          </>
+                        )}
+                      </button>
+                      <a
+                        href={`https://wa.me/919818389758?text=Hi, I'm interested in your real estate services.`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex-1 py-5 px-12 bg-[#25D366] text-white rounded-2xl font-bold text-lg flex items-center justify-center gap-3 hover:opacity-90 transition-all"
+                      >
+                        <MessageCircle size={20} /> WhatsApp Us
+                      </a>
+                    </div>
                     {formStatus === 'success' && (
                       <motion.p
                         initial={{ opacity: 0, y: 10 }}

@@ -38,9 +38,14 @@ export const Navbar = () => {
                 {link.name}
               </Link>
             ))}
-            <Link to="/contact" className="btn-primary py-2 px-5 text-sm">
+            <a 
+              href="https://wa.me/919818389758" 
+              target="_blank" 
+              rel="noopener noreferrer" 
+              className="btn-primary py-2 px-5 text-sm"
+            >
               Enquire Now
-            </Link>
+            </a>
           </div>
 
           {/* Mobile Menu Button */}
@@ -72,13 +77,15 @@ export const Navbar = () => {
                   {link.name}
                 </Link>
               ))}
-              <Link
-                to="/contact"
+              <a
+                href="https://wa.me/919818389758"
+                target="_blank"
+                rel="noopener noreferrer"
                 onClick={() => setIsOpen(false)}
                 className="block w-full text-center btn-primary mt-4"
               >
                 Enquire Now
-              </Link>
+              </a>
             </div>
           </motion.div>
         )}
