@@ -1,10 +1,9 @@
 import express from "express";
+import cors from "cors";
 import { createClient } from "@supabase/supabase-js";
-import dotenv from "dotenv";
-
-dotenv.config();
 
 const app = express();
+app.use(cors());
 app.use(express.json());
 
 app.get("/api/health", (req, res) => {
@@ -12,13 +11,112 @@ app.get("/api/health", (req, res) => {
 });
 
 // Supabase Client
-const supabaseUrl = process.env.SUPABASE_URL || "";
-const supabaseKey = process.env.SUPABASE_ANON_KEY || "";
-const supabase = supabaseUrl && supabaseKey ? createClient(supabaseUrl, supabaseKey) : null;
+const supabaseUrl = process.env.SUPABASE_URL;
+const supabaseKey = process.env.SUPABASE_ANON_KEY;
+let supabase: any = null;
+
+try {
+  if (supabaseUrl && supabaseKey) {
+    supabase = createClient(supabaseUrl, supabaseKey);
+  }
+} catch (e) {
+  console.error('Failed to initialize Supabase:', e);
+}
 
 const ADMIN_PASSWORD = "Shivansh@511";
 
-import { DUMMY_PROPERTIES } from "../src/data/mockData";
+const DUMMY_PROPERTIES = [
+  {
+    id: 101,
+    title: "Skyview Residency",
+    description: "Experience luxury living at its finest with panoramic city views and state-of-the-art facilities. This premium apartment complex offers spacious 3 and 4 BHK units with double-height ceilings.",
+    price: "₹2.8 Cr",
+    location: "Sector 42, Gurugram, Haryana",
+    type: "Apartment",
+    category: "Residential",
+    bhk: 3,
+    size: "2200 sqft",
+    status: "Under Construction",
+    images: ["https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=800&q=80"],
+    amenities: ["Infinity Pool", "Sky Lounge", "Automated Parking", "Concierge"],
+    featured: 1
+  },
+  {
+    id: 102,
+    title: "Ocean Whisper Villa",
+    description: "A serene escape located just minutes from the city center. This fully furnished villa features a private infinity pool, landscaped gardens, and a rooftop deck for sunset views.",
+    price: "₹5.2 Cr",
+    location: "Sector 65, Gurugram, Haryana",
+    type: "Villa",
+    category: "Residential",
+    bhk: 4,
+    size: "3800 sqft",
+    status: "Ready to Move",
+    images: ["https://images.unsplash.com/photo-1613490493576-7fde63acd811?auto=format&fit=crop&w=800&q=80"],
+    amenities: ["Private Pool", "Garden Access", "Outdoor Kitchen", "Security"],
+    featured: 1
+  },
+  {
+    id: 103,
+    title: "Tech Park One",
+    description: "Strategically located in the IT hub, this Grade A commercial building offers flexible office spaces with high-speed connectivity and modern infrastructure.",
+    price: "₹12 Cr",
+    location: "Cyber City, Gurugram, Haryana",
+    type: "Commercial",
+    category: "Commercial",
+    bhk: 0,
+    size: "8500 sqft",
+    status: "Available",
+    images: ["https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=800&q=80"],
+    amenities: ["Fiber Optic", "Food Court", "Ample Parking", "24/7 Power"],
+    featured: 1
+  },
+  {
+    id: 104,
+    title: "Green Acres Plots",
+    description: "Invest in your future with premium residential plots in a gated community. Surrounded by lush greenery and planned infrastructure.",
+    price: "₹85 L",
+    location: "Sohna Road, Gurugram, Haryana",
+    type: "Plot",
+    category: "Residential",
+    bhk: 0,
+    size: "2400 sqft",
+    status: "New Launch",
+    images: ["https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=800&q=80"],
+    amenities: ["Gated Community", "Clubhouse", "Water Supply", "Paved Roads"],
+    featured: 0
+  },
+  {
+    id: 105,
+    title: "The Zenith Tower",
+    description: "An iconic landmark offering premium retail and office spaces. High footfall location with excellent visibility and modern architecture.",
+    price: "₹18 Cr",
+    location: "Golf Course Road, Gurugram, Haryana",
+    type: "Commercial",
+    category: "Commercial",
+    bhk: 0,
+    size: "12000 sqft",
+    status: "Ready to Move",
+    images: ["https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=800&q=80"],
+    amenities: ["Central AC", "Valet Parking", "High-speed Lifts", "CCTV"],
+    featured: 0
+  },
+  {
+    id: 106,
+    title: "Heritage Square",
+    description: "Modern apartments with a touch of traditional architecture. Located in a quiet neighborhood with easy access to schools and hospitals.",
+    price: "₹1.5 Cr",
+    location: "Sector 102, Gurugram, Haryana",
+    type: "Apartment",
+    category: "Residential",
+    bhk: 2,
+    size: "1450 sqft",
+    status: "Ready to Move",
+    images: ["https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=800&q=80"],
+    amenities: ["Community Hall", "Children's Play Area", "Gym", "Power Backup"],
+    featured: 0
+  }
+];
 
 app.post("/api/admin/verify", (req, res) => {
   const { password } = req.body;
@@ -83,7 +181,7 @@ app.post("/api/properties", async (req, res) => {
     .select();
 
   if (error) return res.status(500).json({ error: error.message });
-  res.status(201).json(data[0]);
+  res.status(201).json(data && data.length > 0 ? data[0] : { success: true });
 });
 
 app.delete("/api/properties/:id", async (req, res) => {
@@ -150,6 +248,21 @@ app.get("/api/testimonials", async (req, res) => {
   const { data, error } = await supabase.from("testimonials").select("*");
   if (error) return res.status(500).json({ error: error.message });
   res.json(data);
+});
+
+// 404 handler for API
+app.use("/api/*", (req, res) => {
+  res.status(404).json({ error: "API route not found" });
+});
+
+// Global error handler
+app.use((err: any, req: any, res: any, next: any) => {
+  console.error('API Error:', err);
+  res.status(500).json({ 
+    error: 'Internal Server Error', 
+    message: err.message,
+    stack: process.env.NODE_ENV === 'development' ? err.stack : undefined
+  });
 });
 
 export default app;
