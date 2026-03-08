@@ -13,6 +13,7 @@ export default function AdminDashboard() {
   const [inquiries, setInquiries] = useState<any[]>([]);
   const [activeTab, setActiveTab] = useState<'properties' | 'messages'>('properties');
   const [loading, setLoading] = useState(false);
+  const [uploading, setUploading] = useState(false);
   
   // Form State
   const [newProperty, setNewProperty] = useState({
@@ -85,10 +86,16 @@ export default function AdminDashboard() {
     const payload = {
       ...newProperty,
       password,
-      images: newProperty.images.split(',').map(s => s.trim()),
-      amenities: newProperty.amenities.split(',').map(s => s.trim()),
+      images: newProperty.images.split(',').filter(s => s.trim()).map(s => s.trim()),
+      amenities: newProperty.amenities.split(',').filter(s => s.trim()).map(s => s.trim()),
       featured: Number(newProperty.featured)
     };
+
+    if (payload.images.length === 0) {
+      alert('Please add at least one image URL or upload an image.');
+      setLoading(false);
+      return;
+    }
 
     const res = await fetch('/api/properties', {
       method: 'POST',
@@ -124,6 +131,35 @@ export default function AdminDashboard() {
       fetchProperties();
     } else {
       alert('Error deleting property. Check your password.');
+    }
+  };
+
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setUploading(true);
+    const formData = new FormData();
+    formData.append('image', file);
+
+    try {
+      const res = await fetch('/api/upload', {
+        method: 'POST',
+        body: formData
+      });
+
+      if (res.ok) {
+        const { url } = await res.json();
+        const currentImages = newProperty.images ? newProperty.images + ', ' + url : url;
+        setNewProperty({ ...newProperty, images: currentImages });
+      } else {
+        const err = await res.json();
+        alert(`Upload Error: ${err.message || err.error}`);
+      }
+    } catch (err) {
+      alert('Failed to upload image. Check your connection.');
+    } finally {
+      setUploading(false);
     }
   };
 
@@ -284,12 +320,32 @@ export default function AdminDashboard() {
                       onChange={e => setNewProperty({...newProperty, size: e.target.value})}
                     />
                   </div>
-                  <input
-                    type="text" placeholder="Image URLs (comma separated)"
-                    className="w-full px-5 py-3 bg-navy/5 rounded-xl outline-none"
-                    value={newProperty.images}
-                    onChange={e => setNewProperty({...newProperty, images: e.target.value})}
-                  />
+                  <div className="space-y-2">
+                    <label className="text-xs font-bold text-navy/40 uppercase tracking-widest ml-1">Project Images</label>
+                    <div className="flex flex-col gap-3">
+                      <div className="flex items-center gap-3">
+                        <label className="flex-1 cursor-pointer">
+                          <div className="flex items-center justify-center gap-2 px-5 py-3 bg-emerald/10 text-emerald rounded-xl font-bold hover:bg-emerald/20 transition-all">
+                            <ImageIcon size={18} />
+                            {uploading ? 'Uploading...' : 'Upload Image'}
+                          </div>
+                          <input 
+                            type="file" 
+                            accept="image/*" 
+                            className="hidden" 
+                            onChange={handleFileUpload}
+                            disabled={uploading}
+                          />
+                        </label>
+                      </div>
+                      <input
+                        type="text" placeholder="Or paste image URLs (comma separated)"
+                        className="w-full px-5 py-3 bg-navy/5 rounded-xl outline-none"
+                        value={newProperty.images}
+                        onChange={e => setNewProperty({...newProperty, images: e.target.value})}
+                      />
+                    </div>
+                  </div>
                   <input
                     type="text" placeholder="Amenities (comma separated)"
                     className="w-full px-5 py-3 bg-navy/5 rounded-xl outline-none"

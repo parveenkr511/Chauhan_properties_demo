@@ -1,10 +1,13 @@
 import express from "express";
 import cors from "cors";
+import multer from "multer";
 import { createClient } from "@supabase/supabase-js";
 
 const app = express();
 app.use(cors());
 app.use(express.json());
+
+const upload = multer({ storage: multer.memoryStorage() });
 
 app.get("/api/health", (req, res) => {
   res.json({ 
@@ -16,6 +19,36 @@ app.get("/api/health", (req, res) => {
       has_key: !!process.env.SUPABASE_ANON_KEY
     }
   });
+});
+
+app.post("/api/upload", upload.single("image"), async (req, res) => {
+  if (!supabase) return res.status(500).json({ error: "Database not connected" });
+  if (!req.file) return res.status(400).json({ error: "No file uploaded" });
+
+  const file = req.file;
+  const fileExt = file.originalname.split(".").pop();
+  const fileName = `${Math.random()}.${fileExt}`;
+  const filePath = `properties/${fileName}`;
+
+  const { data, error } = await supabase.storage
+    .from("property-images")
+    .upload(filePath, file.buffer, {
+      contentType: file.mimetype,
+      upsert: true
+    });
+
+  if (error) {
+    return res.status(500).json({ 
+      error: error.message,
+      message: "Make sure you have created a public bucket named 'property-images' in Supabase Storage."
+    });
+  }
+
+  const { data: { publicUrl } } = supabase.storage
+    .from("property-images")
+    .getPublicUrl(filePath);
+
+  res.json({ url: publicUrl });
 });
 
 // Supabase Client
