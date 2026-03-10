@@ -21,34 +21,47 @@ app.get("/api/health", (req, res) => {
   });
 });
 
-app.post("/api/upload", upload.single("image"), async (req, res) => {
+app.post("/api/upload", upload.array("images", 10), async (req, res) => {
   if (!supabase) return res.status(500).json({ error: "Database not connected" });
-  if (!req.file) return res.status(400).json({ error: "No file uploaded" });
-
-  const file = req.file;
-  const fileExt = file.originalname.split(".").pop();
-  const fileName = `${Math.random()}.${fileExt}`;
-  const filePath = `properties/${fileName}`;
-
-  const { data, error } = await supabase.storage
-    .from("property-images")
-    .upload(filePath, file.buffer, {
-      contentType: file.mimetype,
-      upsert: true
-    });
-
-  if (error) {
-    return res.status(500).json({ 
-      error: error.message,
-      message: "Make sure you have created a public bucket named 'property-images' in Supabase Storage."
-    });
+  if (!req.files || (req.files as Express.Multer.File[]).length === 0) {
+    return res.status(400).json({ error: "No files uploaded" });
   }
 
-  const { data: { publicUrl } } = supabase.storage
-    .from("property-images")
-    .getPublicUrl(filePath);
+  const files = req.files as Express.Multer.File[];
+  const uploadPromises = files.map(async (file) => {
+    const fileExt = file.originalname.split(".").pop();
+    const fileName = `${Math.random().toString(36).substring(2)}.${fileExt}`;
+    const filePath = `properties/${fileName}`;
 
-  res.json({ url: publicUrl });
+    const { data, error } = await supabase.storage
+      .from("property-images")
+      .upload(filePath, file.buffer, {
+        contentType: file.mimetype,
+        upsert: true
+      });
+
+    if (error) {
+      throw new Error(`${error.message} (Bucket: property-images)`);
+    }
+
+    const { data: { publicUrl } } = supabase.storage
+      .from("property-images")
+      .getPublicUrl(filePath);
+
+    return publicUrl;
+  });
+
+  try {
+    const urls = await Promise.all(uploadPromises);
+    res.json({ urls });
+  } catch (error: any) {
+    console.error('Upload error details:', error);
+    res.status(500).json({ 
+      error: error.message,
+      details: error.toString(),
+      message: "Supabase Storage Error: Please ensure you have a public bucket named 'property-images' AND that you have set up the correct RLS policies (INSERT, SELECT) for 'anon' or 'authenticated' users in the Supabase dashboard."
+    });
+  }
 });
 
 // Supabase Client

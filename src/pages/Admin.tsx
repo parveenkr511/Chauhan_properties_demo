@@ -3,6 +3,7 @@ import { motion } from 'motion/react';
 import { Plus, Trash2, LayoutDashboard, LogOut, Key, Image as ImageIcon, MapPin, Tag, Home, Maximize, BedDouble, MessageSquare, User, Mail as MailIcon, Phone as PhoneIcon } from 'lucide-react';
 import { Property, Inquiry } from '../types';
 import { propertyService } from '../services/propertyService';
+import { compressImage } from '../services/imageService';
 
 export default function AdminDashboard() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -14,6 +15,7 @@ export default function AdminDashboard() {
   const [activeTab, setActiveTab] = useState<'properties' | 'messages'>('properties');
   const [loading, setLoading] = useState(false);
   const [uploading, setUploading] = useState(false);
+  const [compressing, setCompressing] = useState(false);
   
   // Form State
   const [newProperty, setNewProperty] = useState({
@@ -135,12 +137,20 @@ export default function AdminDashboard() {
   };
 
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
+
+    setCompressing(true);
+    const compressedFiles = await Promise.all(
+      Array.from(files as FileList).map((file: File) => compressImage(file))
+    );
+    setCompressing(false);
 
     setUploading(true);
     const formData = new FormData();
-    formData.append('image', file);
+    compressedFiles.forEach(file => {
+      formData.append('images', file);
+    });
 
     try {
       const res = await fetch('/api/upload', {
@@ -149,15 +159,18 @@ export default function AdminDashboard() {
       });
 
       if (res.ok) {
-        const { url } = await res.json();
-        const currentImages = newProperty.images ? newProperty.images + ', ' + url : url;
+        const { urls } = await res.json();
+        const newUrls = urls.join(', ');
+        const currentImages = newProperty.images ? newProperty.images + ', ' + newUrls : newUrls;
         setNewProperty({ ...newProperty, images: currentImages });
       } else {
         const err = await res.json();
-        alert(`Upload Error: ${err.message || err.error}`);
+        const errorMessage = err.message || err.error || 'Unknown upload error';
+        const errorDetails = err.details ? `\n\nDetails: ${err.details}` : '';
+        alert(`Upload Error: ${errorMessage}${errorDetails}`);
       }
     } catch (err) {
-      alert('Failed to upload image. Check your connection.');
+      alert('Failed to upload images. Check your connection.');
     } finally {
       setUploading(false);
     }
@@ -358,27 +371,75 @@ export default function AdminDashboard() {
                   </div>
 
                   <div className="space-y-2">
-                    <label className="text-[11px] font-bold text-white/40 uppercase tracking-wider ml-1">Project Images</label>
+                    <div className="flex justify-between items-end ml-1">
+                      <label className="text-[11px] font-bold text-white/40 uppercase tracking-wider">Project Images</label>
+                      {newProperty.images && (
+                        <div className="flex items-center gap-3">
+                          <span className="text-[10px] font-bold text-emerald uppercase tracking-wider">
+                            {newProperty.images.split(',').filter(i => i.trim()).length} Images Added
+                          </span>
+                          <button 
+                            type="button"
+                            onClick={() => setNewProperty({...newProperty, images: ''})}
+                            className="text-[10px] font-bold text-red-500 uppercase tracking-wider hover:underline"
+                          >
+                            Clear All
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                    
+                    {/* Image Preview Gallery */}
+                    {newProperty.images && (
+                      <div className="grid grid-cols-4 gap-2 mb-3">
+                        {newProperty.images.split(',').filter(i => i.trim()).map((url, idx) => (
+                          <div key={idx} className="relative aspect-square rounded-lg overflow-hidden border border-white/10 group">
+                            <img 
+                              src={url.trim()} 
+                              alt={`Preview ${idx}`} 
+                              className="w-full h-full object-cover"
+                              referrerPolicy="no-referrer"
+                            />
+                            <button
+                              type="button"
+                              onClick={() => {
+                                const urls = newProperty.images.split(',').filter(i => i.trim());
+                                urls.splice(idx, 1);
+                                setNewProperty({...newProperty, images: urls.join(', ')});
+                              }}
+                              className="absolute inset-0 bg-red-500/80 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity"
+                            >
+                              <Trash2 size={14} className="text-white" />
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+
                     <div className="flex flex-col gap-3">
                       <label className="cursor-pointer group">
                         <div className="flex items-center justify-center gap-2 px-5 py-3.5 bg-emerald text-white rounded-xl font-bold shadow-lg shadow-emerald/20 hover:bg-emerald-dark transition-all">
                           <ImageIcon size={18} />
-                          {uploading ? 'Uploading...' : 'Upload Image'}
+                          {compressing ? 'Optimizing...' : uploading ? 'Uploading...' : 'Upload Images (Multiple)'}
                         </div>
                         <input 
                           type="file" 
                           accept="image/*" 
+                          multiple
                           className="hidden" 
                           onChange={handleFileUpload}
-                          disabled={uploading}
+                          disabled={uploading || compressing}
                         />
                       </label>
-                      <input
-                        type="text" placeholder="Or paste image URLs (comma separated)"
-                        className="w-full px-5 py-3.5 bg-white/5 border border-white/10 rounded-xl outline-none text-white focus:ring-2 focus:ring-emerald/20 focus:border-emerald transition-all placeholder:text-white/20"
-                        value={newProperty.images}
-                        onChange={e => setNewProperty({...newProperty, images: e.target.value})}
-                      />
+                      <div className="relative">
+                        <textarea
+                          placeholder="Or paste image URLs (comma separated)"
+                          rows={2}
+                          className="w-full px-5 py-3.5 bg-white/5 border border-white/10 rounded-xl outline-none text-white focus:ring-2 focus:ring-emerald/20 focus:border-emerald transition-all placeholder:text-white/20 text-sm resize-none"
+                          value={newProperty.images}
+                          onChange={e => setNewProperty({...newProperty, images: e.target.value})}
+                        />
+                      </div>
                     </div>
                   </div>
 
