@@ -11,6 +11,7 @@ export default function ListingsPage() {
   const [properties, setProperties] = useState<Property[]>([]);
   const [loading, setLoading] = useState(true);
   const [showMobileFilters, setShowMobileFilters] = useState(false);
+  const [isShowingRecommendations, setIsShowingRecommendations] = useState(false);
 
   const [filters, setFilters] = useState({
     type: searchParams.get('type') || '',
@@ -20,10 +21,51 @@ export default function ListingsPage() {
 
   useEffect(() => {
     setLoading(true);
+    setIsShowingRecommendations(false);
+    
     propertyService.getProperties(filters)
       .then(data => {
-        setProperties(Array.isArray(data) ? data : []);
-        setLoading(false);
+        const results = Array.isArray(data) ? data : [];
+        
+        if (results.length === 0 && (filters.location || filters.type || filters.category)) {
+          // No exact matches, fetch recommendations
+          // Try to be more specific: if location failed, try same type/category first
+          const recFilters = {
+            type: filters.type,
+            category: filters.category,
+          };
+          
+          propertyService.getProperties(recFilters)
+            .then(allData => {
+              let recs = Array.isArray(allData) ? allData.slice(0, 6) : [];
+              
+              // If still no results with type/category, get absolutely anything
+              if (recs.length === 0 && (recFilters.type || recFilters.category)) {
+                return propertyService.getProperties({});
+              }
+              return recs;
+            })
+            .then(finalRecs => {
+              const recs = Array.isArray(finalRecs) ? finalRecs.slice(0, 6) : [];
+              if (recs.length > 0) {
+                setProperties(recs);
+                setIsShowingRecommendations(true);
+              } else {
+                setProperties([]);
+                setIsShowingRecommendations(false);
+              }
+              setLoading(false);
+            })
+            .catch(() => {
+              setProperties([]);
+              setIsShowingRecommendations(false);
+              setLoading(false);
+            });
+        } else {
+          setProperties(results);
+          setIsShowingRecommendations(false);
+          setLoading(false);
+        }
       })
       .catch(err => {
         console.error('[ListingsPage] Error loading properties:', err);
@@ -115,16 +157,29 @@ export default function ListingsPage() {
 
           {/* Main Content */}
           <main className="flex-1">
-            <div className="flex items-center justify-between mb-8">
-              <h1 className="text-2xl font-display font-bold text-navy">
-                {properties.length} Properties Found
-              </h1>
-              <button
-                onClick={() => setShowMobileFilters(true)}
-                className="lg:hidden flex items-center gap-2 btn-outline py-2 px-4 text-sm"
-              >
-                <Filter size={18} /> Filters
-              </button>
+            <div className="flex flex-col mb-8">
+              <div className="flex items-center justify-between mb-2">
+                <h1 className="text-2xl font-display font-bold text-navy">
+                  {isShowingRecommendations ? 'No Exact Matches Found' : `${properties.length} Properties Found`}
+                </h1>
+                <button
+                  onClick={() => setShowMobileFilters(true)}
+                  className="lg:hidden flex items-center gap-2 btn-outline py-2 px-4 text-sm"
+                >
+                  <Filter size={18} /> Filters
+                </button>
+              </div>
+              {isShowingRecommendations && (
+                <div className="bg-emerald/10 border border-emerald/20 rounded-2xl p-4 flex items-start gap-3">
+                  <div className="bg-emerald text-white p-1 rounded-full shrink-0 mt-0.5">
+                    <Search size={14} />
+                  </div>
+                  <div>
+                    <p className="text-navy font-medium">We couldn't find properties matching your exact search in <span className="font-bold">"{filters.location || 'this location'}"</span>.</p>
+                    <p className="text-navy/60 text-sm">Showing some of our best recommended properties for you instead.</p>
+                  </div>
+                </div>
+              )}
             </div>
 
             {loading ? (
